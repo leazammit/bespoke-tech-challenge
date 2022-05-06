@@ -73,4 +73,27 @@ class ItemsController extends Controller
 
         return redirect()->route('admin.items.index')->with('message', 'Successfully Updated Item');
     }
+
+    //Search Items tickets 
+    public function searchItems($searchParameter, $searchValue): Response{
+
+        //note that intentionally parameter data retrieval takes place here as opposed to the above parameters
+
+        //type filter: fetch from dashboard controller and then build where query 
+        Route::any('/search',function(){
+            $queryResult = Item::where($searchParameter,'LIKE','%'.$searchValue.'%')->get();
+            if(count($queryResult) > 0)
+                return view('/admin/items')->withDetails($queryResult->map->only ( ['name','description','type'] ));
+            else return view ('/admin/items')->withMessage('No Details found. Try to search again !');
+        });
+
+    }
+
+    //Delete Items
+    public function delete($itemID): Response{
+        // fn to be fetched from edit 
+        return Inertia::find($itemID) -> delete();
+    }
+
+
 }
